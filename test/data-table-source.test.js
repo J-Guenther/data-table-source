@@ -25,4 +25,10 @@ describe('DataTableSourceTest', function () {
         const dataTableSource = new DataTableSource(data)
         expect(dataTableSource).to.be.instanceof(DataTableSource)
     });
+
+    it('should filter data by string', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.filter("hi")
+        expect(dataTableSource.filteredData).eql([{position: 3, name: 'Lithium', weight: 6.941, symbol: 'Li'}])
+    });
 });

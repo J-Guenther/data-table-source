@@ -4,12 +4,13 @@
   "description": "A datasource with filter, sorting and pagination for tables",
   "main": "src/data-table-source.js",
   "scripts": {
-    "test": "mocha --reporter spec 'test/**/*test.js'"
+    "test": "nyc mocha --reporter spec 'test/**/*test.js'"
   },
   "author": "Jannik Günther",
   "license": "MIT",
   "devDependencies": {
     "chai": "^4.3.6",
-    "mocha": "^10.0.0"
+    "mocha": "^10.0.0",
+    "nyc": "^15.1.0"
   }
 }
