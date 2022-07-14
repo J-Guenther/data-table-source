@@ -55,6 +55,16 @@ describe('DataTableSource constructor tests', function () {
         expect(() => new DataTableSource([1337, 1234, 4321])
         ).to.throw('Can not create DataTableSource. Input data needs to be an array of objects.')
     });
+
+    it('should create DataTableSource when input is an empty array', function () {
+        const dataTableSource = new DataTableSource([])
+        expect(dataTableSource).to.be.instanceof(DataTableSource)
+    });
+
+    it('should create DataTableSource when input is an array of length 1', function () {
+        const dataTableSource = new DataTableSource([{singer: 'Merethe Soltvedt'}])
+        expect(dataTableSource).to.be.instanceof(DataTableSource)
+    });
 })
 
 
@@ -110,6 +120,12 @@ describe('DataTableSource filter tests', function () {
         dataTableSource.filter = 'Bergersen'
         dataTableSource.resetFilter()
         expect(dataTableSource.renderedData).eql(data)
+    });
+
+    it('should not crash when filtering an empty Array', function () {
+        const dataTableSource = new DataTableSource([])
+        dataTableSource.filter = "Bergersen"
+        expect(dataTableSource.renderedData).eql([])
     });
 
 });

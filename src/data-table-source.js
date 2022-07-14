@@ -10,10 +10,10 @@ module.exports = class DataTableSource {
             throw new Error("Can not create DataTableSource. Input data needs to be an array of objects.")
         }
         if (data.length > 0) {
-            if (!this._checkIfArrayConsistsOfObjects(data)) {
+            if (!this.#checkIfArrayConsistsOfObjects(data)) {
                 throw new Error("Can not create DataTableSource. Input data needs to be an array of objects.")
             }
-            if (!this._checkIfObjectsHaveSameKeys(data)) {
+            if (!this.#checkIfObjectsHaveSameKeys(data)) {
                 throw new Error("Objects in data array do not have uniform keys")
             }
         }
@@ -23,7 +23,7 @@ module.exports = class DataTableSource {
 
     set data(value) {
         this.#data = value
-        this._render()
+        this.#render()
     }
 
     get filter(){
@@ -32,27 +32,27 @@ module.exports = class DataTableSource {
 
     set filter(value){
         this.#filter = value
-        this._render()
+        this.#render()
     }
 
     get renderedData(){
         return this.#renderedData
     }
 
-    _checkIfArrayConsistsOfObjects(data) {
+    #checkIfArrayConsistsOfObjects(data) {
         return !data.some((currentValue) => {
             return typeof currentValue !== 'object' || Array.isArray(currentValue) || !currentValue
         })
     }
 
-    _checkIfObjectsHaveSameKeys(data) {
+    #checkIfObjectsHaveSameKeys(data) {
         const firstObject = data[0]
         return data.every((currentValue) => {
             return JSON.stringify(Object.keys(firstObject).sort()) === JSON.stringify(Object.keys(currentValue).sort());
         })
     }
 
-    _filterData(filter) {
+    #filterData(filter) {
         if (typeof filter === 'number') {
             filter = filter.toString()
         }
@@ -65,8 +65,8 @@ module.exports = class DataTableSource {
         })
     }
 
-    _render() {
-        this._filterData(this.filter)
+    #render() {
+        this.#filterData(this.filter)
         this.#renderedData = this.#filteredData
     }
 
