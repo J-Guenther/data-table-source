@@ -104,7 +104,8 @@ module.exports = class DataTableSource {
         }
         this.#filteredData = this.#data.filter(dataObject => {
             const dataStr = Object.keys(dataObject).reduce((currentTerm, key) => {
-                return currentTerm + dataObject[key] + '◬';
+                // The delimiter helps to prevent unintended matches that might occur if the property values are concatenated without any separation.
+                return currentTerm + dataObject[key] + '(◕‿◕)';
             }, '').toLowerCase()
 
             return dataStr.indexOf(filter.toLowerCase().trim()) !== -1
