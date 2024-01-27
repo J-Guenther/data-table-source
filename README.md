@@ -3,7 +3,7 @@
 `DataTableSource` is a simple JavaScript class designed to manage and filter tabular data easily. It allows you to set data, apply filters, paginate through data, sort data, and retrieve the currently rendered dataset. It contains the JS logic you need for creating dynamic HTML tables. 
 
 ## Installation
-Coming soon...
+`npm i data-table-source`
 
 ## Usage
 ```javascript
