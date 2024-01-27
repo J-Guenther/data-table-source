@@ -1,6 +1,6 @@
 # DataTableSource
 
-`DataTableSource` is a simple JavaScript class designed to manage and filter tabular data easily. It allows you to set data, apply filters, paginate through data, and retrieve the currently rendered dataset. It contains the JS logic you need for creating dynamic tables. 
+`DataTableSource` is a simple JavaScript class designed to manage and filter tabular data easily. It allows you to set data, apply filters, paginate through data, sort data, and retrieve the currently rendered dataset. It contains the JS logic you need for creating dynamic HTML tables. 
 
 ## Installation
 Coming soon...
@@ -20,8 +20,15 @@ const dataArray = [
 const dataTable = new DataTableSource(dataArray, pageSize);
 
 // Set filters and paginate through data
-dataTable.filter = 'example';
+dataTable.filter = 'berg';
 dataTable.nextPage();
+
+// Sort data by column name in ascending order
+dataTable.sortData('name', 'asc')
+
+// Reset sorting and filtering
+dataTable.resetSorting()
+dataTable.resetFilter()
 ```
 
 ## API
@@ -82,6 +89,24 @@ dataTable.currentPage = 2;
 console.log(dataTable.currentPage); // 2
 ```
 
+#### sortOrder: string
+
+Getter for the current sort order. Can be 'asc' or 'desc'
+
+Even if this has a value, data can be rendered unsorted. Actively call the sortData-Function to sort data.
+
+```javascript
+console.log(dataTable.sortOrder); // 'asc'
+```
+
+#### sortKey: string
+
+Getter for the current sort key / column.
+
+```javascript
+console.log(dataTable.sortKey); // 'name'
+```
+
 ### Methods
 
 #### getMaxPages(): number
@@ -115,5 +140,21 @@ Resets the filter to an empty string.
 
 ```javascript
 dataTable.resetFilter();
+```
+
+#### sortData(key: string, order?: string = 'asc'): void
+
+Sorts the data array by key (column name) in ascending or descending order.
+
+```javascript
+dataTable.sortData('name', 'desc');
+```
+
+#### resetSorting(): void
+
+Resets the sorting to display the data in its original order
+
+```javascript
+dataTable.resetSorting();
 ```
 

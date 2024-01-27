@@ -65,6 +65,11 @@ describe('DataTableSource constructor tests', function () {
         const dataTableSource = new DataTableSource([{singer: 'Merethe Soltvedt'}])
         expect(dataTableSource).to.be.instanceof(DataTableSource)
     });
+
+    it('should render the data as it is', function () {
+        const dataTableSource = new DataTableSource(data)
+        expect(dataTableSource.renderedData).eql(data)
+    });
 })
 
 
@@ -261,4 +266,235 @@ describe('DataTableSource pagination tests', function () {
         expect(dataTableSource.currentPage).eql(1)
         expect(dataTableSource.getMaxPages()).eql(4)
     });
+});
+
+describe('DataTableSource sorting tests', function () {
+
+    it('should sort data by name, ascending', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.sortData("name")
+
+        const sortedData = dataTableSource.renderedData
+
+        const expectedSortedArray = [
+            {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+            {name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+            {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+            {
+                name: 'One Million Voices',
+                album: 'Humanity - Chapter IV',
+                year: 2021,
+                length: 8.53,
+                composer: 'Thomas Bergersen'
+            },
+            {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+            {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'},
+        ]
+
+        // Assert that the renderedData is sorted by comparing each element
+        for (let i = 0; i < sortedData.length; i++) {
+            expect(sortedData[i]).to.deep.equal(expectedSortedArray[i])
+        }
+    });
+
+    it('should sort data by name, descending', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.sortData("name", "desc")
+
+        const sortedData = dataTableSource.renderedData
+
+        const expectedSortedArray = [
+            {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'},
+            {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+            {
+                name: 'One Million Voices',
+                album: 'Humanity - Chapter IV',
+                year: 2021,
+                length: 8.53,
+                composer: 'Thomas Bergersen'
+            },
+            {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+            {name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+            {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'},
+        ]
+
+        // Assert that the renderedData is sorted by comparing each element
+        for (let i = 0; i < sortedData.length; i++) {
+            expect(sortedData[i]).to.deep.equal(expectedSortedArray[i])
+        }
+    });
+
+    it('should throw an error if sorting order is invalid', function () {
+        const dataTableSource = new DataTableSource(data)
+        expect(() => dataTableSource.sortData("name", "TSFH")
+        ).to.throw('Invalid sorting order. Use "asc" for ascending or "desc" for descending.')
+    });
+
+    it('should throw an error if column name is invalid', function () {
+        const dataTableSource = new DataTableSource(data)
+        expect(() => dataTableSource.sortData("TSFH", "asc")
+        ).to.throw('Key "TSFH" does not exist in the data objects.')
+    });
+
+    it('should sort numeric data, ascending', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.sortData("year")
+
+        const sortedData = dataTableSource.renderedData
+
+        const expectedSortedArray = [
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'},
+            {name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+            {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+            {
+                name: 'One Million Voices',
+                album: 'Humanity - Chapter IV',
+                year: 2021,
+                length: 8.53,
+                composer: 'Thomas Bergersen'
+            },
+            {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'},
+        ]
+
+        // Assert that the renderedData is sorted by comparing each element
+        for (let i = 0; i < sortedData.length; i++) {
+            expect(sortedData[i]).to.deep.equal(expectedSortedArray[i])
+        }
+    });
+
+    it('should display the second page sorted', function () {
+        const dataTableSource = new DataTableSource(data,  5)
+        dataTableSource.sortData("name")
+        dataTableSource.currentPage = 2
+        expect(dataTableSource.renderedData).eql([{name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+            {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+            {
+                name: 'One Million Voices',
+                album: 'Humanity - Chapter IV',
+                year: 2021,
+                length: 8.53,
+                composer: 'Thomas Bergersen'
+            },
+            {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+            {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'}])
+    });
+
+    it('should keep the sorting when switching pages', function () {
+        const dataTableSource = new DataTableSource(data,  5)
+        dataTableSource.sortData("name")
+        dataTableSource.currentPage = 2
+        dataTableSource.previousPage()
+        expect(dataTableSource.renderedData).eql([{name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'}])
+    });
+
+    it('should display data correctly after switching sorting', function () {
+        const dataTableSource = new DataTableSource(data,  5)
+        dataTableSource.sortData("name")
+        dataTableSource.currentPage = 2
+        expect(dataTableSource.renderedData).eql([{name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+            {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+            {
+                name: 'One Million Voices',
+                album: 'Humanity - Chapter IV',
+                year: 2021,
+                length: 8.53,
+                composer: 'Thomas Bergersen'
+            },
+            {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+            {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'}])
+        dataTableSource.previousPage()
+        expect(dataTableSource.renderedData).eql([{name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'}])
+        dataTableSource.sortData("name", "desc")
+        dataTableSource.nextPage()
+        expect(dataTableSource.renderedData).eql([{name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+            {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+            {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+            {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'}])
+    });
+
+    it('should keep sorting when filtering', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.sortData("name", "desc")
+        expect(dataTableSource.renderedData).eql(
+            [
+                {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'},
+                {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+                {
+                    name: 'One Million Voices',
+                    album: 'Humanity - Chapter IV',
+                    year: 2021,
+                    length: 8.53,
+                    composer: 'Thomas Bergersen'
+                },
+                {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+                {name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+                {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+                {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+                {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+                {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+                {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'}
+            ]
+        )
+
+        dataTableSource.filter = 2010
+        expect(dataTableSource.renderedData).eql(
+            [
+                {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+                {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+            ]
+        )
+    });
+
+    it('should reset sorting', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.sortData("name", "desc")
+        expect(dataTableSource.renderedData).eql(
+            [
+                {name: 'Shield of Love', album: 'Songs for Ukraine', year: 2022, length: 3.03, composer: 'Thomas Bergersen'},
+                {name: 'Orion', album: 'Orion', year: 2019, length: 8.07, composer: 'Michal Cielecki'},
+                {
+                    name: 'One Million Voices',
+                    album: 'Humanity - Chapter IV',
+                    year: 2021,
+                    length: 8.53,
+                    composer: 'Thomas Bergersen'
+                },
+                {name: 'Nightwood', album: 'Colin Frake On Fire Mountain', year: 2014, length: 3.09, composer: 'Nick Phoenix'},
+                {name: 'Impossible', album: 'Unleashed', year: 2017, length: 8.54, composer: 'Thomas Bergersen'},
+                {name: 'Fire Nation', album: 'Invincible', year: 2010, length: 2.59, composer: 'Nick Phoenix'},
+                {name: 'Empire of Angles', album: 'Sun', year: 2015, length: 5.16, composer: 'Thomas Bergersen'},
+                {name: 'Dragon Rider', album: 'Archangel', year: 2010, length: 1.53, composer: 'Thomas Bergersen'},
+                {name: 'Blackheart', album: 'SkyWorld', year: 2012, length: 4.32, composer: 'Thomas Bergersen'},
+                {name: 'Battleborne', album: 'Battlecry', year: 2015, length: 5.08, composer: 'Nick Phoenix'}
+            ]
+        )
+
+        dataTableSource.resetSorting()
+        expect(dataTableSource.renderedData).eql(
+            data
+        )
+    });
+
 });

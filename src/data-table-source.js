@@ -10,6 +10,8 @@ module.exports = class DataTableSource {
     #filter = ''
     #pageSize
     #currentPage = 1
+    #sortOrder = 'asc'
+    #sortKey = ''
 
     /**
      * Creates a new DataTableSource instance.
@@ -41,6 +43,7 @@ module.exports = class DataTableSource {
      */
     set data(value) {
         this.#data = value
+        this.#filteredData = this.#data
         this.#render()
     }
 
@@ -54,12 +57,15 @@ module.exports = class DataTableSource {
 
     /**
      * Setter for the filter property.
-     * @param {string} value - The new filter string.
+     * @param {string | number} value - The new filter string.
      */
     set filter(value) {
         this.#currentPage = 1
         this.#filter = value
-        this.#render()
+        this.#filterData(this.#filter)
+        if (this.#sortKey) {
+            this.sortData(this.#sortKey, this.#sortOrder)
+        }
     }
 
     /**
@@ -112,6 +118,22 @@ module.exports = class DataTableSource {
      */
     get currentPage() {
         return this.#currentPage
+    }
+
+    /**
+     * Getter for the sortOrder property.
+     * @returns {string} - The current sorting order ('asc' for ascending, 'desc' for descending).
+     */
+    get sortOrder() {
+        return this.#sortOrder;
+    }
+
+    /**
+     * Getter for the sortKey property.
+     * @returns {string} - The current key used for sorting.
+     */
+    get sortKey() {
+        return this.#sortKey;
     }
 
     /**
@@ -182,6 +204,55 @@ module.exports = class DataTableSource {
 
             return dataStr.indexOf(filter.toLowerCase().trim()) !== -1
         })
+
+        this.#render()
+    }
+
+    /**
+     * Sorts the data based on a specified key and order.
+     * @param {string} key - The key to sort by.
+     * @param {'asc' | 'desc'} [order='asc'] - The sorting order ('asc' for ascending, 'desc' for descending).
+     * @throws {Error} If the sorting order is not 'asc' or 'desc'.
+     * @throws {Error} If the specified key does not exist in the data objects.
+     */
+    sortData(key, order = 'asc') {
+        if (['asc', 'desc'].indexOf(order) === -1) {
+            throw new Error('Invalid sorting order. Use "asc" for ascending or "desc" for descending.');
+        }
+
+        if (!this.#checkIfKeyExists(key)) {
+            throw new Error(`Key "${key}" does not exist in the data objects.`);
+        }
+
+        this.#filteredData = this.#filteredData.slice().sort((a, b) => {
+            const valueA = a[key];
+            const valueB = b[key];
+
+            if (valueA === valueB) {
+                return 0;
+            }
+
+            if (order === 'asc') {
+                return valueA < valueB ? -1 : 1;
+            } else {
+                return valueA > valueB ? -1 : 1;
+            }
+        });
+
+        this.#sortKey = key
+        this.#sortOrder = order
+
+        this.#render();
+    }
+
+    /**
+     * Checks if the specified key exists in all data objects.
+     * @private
+     * @param {string} key - The key to check for existence.
+     * @returns {boolean} - True if the key exists in all data objects; otherwise, false.
+     */
+    #checkIfKeyExists(key) {
+        return this.#data.every(dataObject => key in dataObject);
     }
 
     /**
@@ -189,8 +260,8 @@ module.exports = class DataTableSource {
      * @private
      */
     #render() {
-        this.#filterData(this.filter)
 
+        // Apply Pagination
         const startIndex = (this.#currentPage - 1) * this.#pageSize;
         let endIndex = startIndex + this.#pageSize;
         if (endIndex <= 0) {
@@ -205,5 +276,11 @@ module.exports = class DataTableSource {
      */
     resetFilter() {
         this.filter = ''
+    }
+
+    resetSorting() {
+        this.#sortOrder = ''
+        this.#sortKey = 'asc'
+        this.#filterData(this.#filter)
     }
 }
