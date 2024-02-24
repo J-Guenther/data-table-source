@@ -1,6 +1,6 @@
 {
   "name": "data-table-source",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "A datasource with filter, sorting and pagination for tables",
   "main": "src/data-table-source.js",
   "scripts": {
