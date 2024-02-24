@@ -4,14 +4,14 @@
  */
 module.exports = class DataTableSource {
 
-    #data
-    #renderedData
-    #filteredData
-    #filter = ''
-    #pageSize
-    #currentPage = 1
-    #sortOrder = 'asc'
-    #sortKey = ''
+    #_data
+    #_renderedData
+    #_filteredData
+    #_filter = ''
+    #_pageSize
+    #_currentPage = 1
+    #_sortOrder = 'asc'
+    #_sortKey = ''
 
     /**
      * Creates a new DataTableSource instance.
@@ -42,8 +42,8 @@ module.exports = class DataTableSource {
      * @param {Array} value - The new data array.
      */
     set data(value) {
-        this.#data = value
-        this.#filteredData = this.#data
+        this.#_data = value
+        this.#_filteredData = this.#_data
         this.#render()
     }
 
@@ -52,7 +52,7 @@ module.exports = class DataTableSource {
      * @returns {string} - The current filter string.
      */
     get filter() {
-        return this.#filter
+        return this.#_filter
     }
 
     /**
@@ -60,11 +60,11 @@ module.exports = class DataTableSource {
      * @param {string | number} value - The new filter string.
      */
     set filter(value) {
-        this.#currentPage = 1
-        this.#filter = value
-        this.#filterData(this.#filter)
-        if (this.#sortKey) {
-            this.sortData(this.#sortKey, this.#sortOrder)
+        this.#_currentPage = 1
+        this.#_filter = value
+        this.#filterData(this.#_filter)
+        if (this.#_sortKey) {
+            this.sortData(this.#_sortKey, this.#_sortOrder)
         }
     }
 
@@ -73,7 +73,7 @@ module.exports = class DataTableSource {
      * @returns {Array} - The currently rendered data array based on filter, pageSize, and currentPage.
      */
     get renderedData() {
-        return this.#renderedData
+        return this.#_renderedData
     }
 
     /**
@@ -83,7 +83,7 @@ module.exports = class DataTableSource {
      */
     set pageSize(value) {
         if (typeof value === 'number' && value >= 0) {
-            this.#pageSize = value
+            this.#_pageSize = value
             this.#render()
         } else {
             throw new Error('pageSize must be a number greater or equal 0')
@@ -95,7 +95,7 @@ module.exports = class DataTableSource {
      * @returns {number} - The current page size value.
      */
     get pageSize() {
-        return this.#pageSize
+        return this.#_pageSize
     }
 
     /**
@@ -105,7 +105,7 @@ module.exports = class DataTableSource {
      */
     set currentPage(value) {
         if (typeof value === 'number' && value > 0) {
-            this.#currentPage = value
+            this.#_currentPage = value
             this.#render()
         } else {
             throw new Error('currentPage must be a positive number')
@@ -117,7 +117,7 @@ module.exports = class DataTableSource {
      * @returns {number} - The current page number.
      */
     get currentPage() {
-        return this.#currentPage
+        return this.#_currentPage
     }
 
     /**
@@ -125,7 +125,7 @@ module.exports = class DataTableSource {
      * @returns {string} - The current sorting order ('asc' for ascending, 'desc' for descending).
      */
     get sortOrder() {
-        return this.#sortOrder;
+        return this.#_sortOrder;
     }
 
     /**
@@ -133,7 +133,7 @@ module.exports = class DataTableSource {
      * @returns {string} - The current key used for sorting.
      */
     get sortKey() {
-        return this.#sortKey;
+        return this.#_sortKey;
     }
 
     /**
@@ -141,14 +141,14 @@ module.exports = class DataTableSource {
      * @returns {number} - The maximum number of pages.
      */
     getMaxPages() {
-        return this.#pageSize > 0 ? Math.ceil(this.#filteredData.length / this.#pageSize) : 1
+        return this.#_pageSize > 0 ? Math.ceil(this.#_filteredData.length / this.#_pageSize) : 1
     }
 
     /**
      * Moves to the next page if available.
      */
     nextPage() {
-        if (this.#currentPage < this.getMaxPages()) {
+        if (this.#_currentPage < this.getMaxPages()) {
             this.currentPage += 1;
         }
     }
@@ -157,7 +157,7 @@ module.exports = class DataTableSource {
      * Moves to the previous page if available.
      */
     previousPage() {
-        if (this.#currentPage > 1) {
+        if (this.#_currentPage > 1) {
             this.currentPage -= 1;
         }
     }
@@ -196,7 +196,7 @@ module.exports = class DataTableSource {
         if (typeof filter === 'number') {
             filter = filter.toString()
         }
-        this.#filteredData = this.#data.filter(dataObject => {
+        this.#_filteredData = this.#_data.filter(dataObject => {
             const dataStr = Object.keys(dataObject).reduce((currentTerm, key) => {
                 // The delimiter helps to prevent unintended matches that might occur if the property values are concatenated without any separation.
                 return currentTerm + dataObject[key] + '(◕‿◕)';
@@ -224,7 +224,7 @@ module.exports = class DataTableSource {
             throw new Error(`Key "${key}" does not exist in the data objects.`);
         }
 
-        this.#filteredData = this.#filteredData.slice().sort((a, b) => {
+        this.#_filteredData = this.#_filteredData.slice().sort((a, b) => {
             const valueA = a[key];
             const valueB = b[key];
 
@@ -239,8 +239,8 @@ module.exports = class DataTableSource {
             }
         });
 
-        this.#sortKey = key
-        this.#sortOrder = order
+        this.#_sortKey = key
+        this.#_sortOrder = order
 
         this.#render();
     }
@@ -252,7 +252,7 @@ module.exports = class DataTableSource {
      * @returns {boolean} - True if the key exists in all data objects; otherwise, false.
      */
     #checkIfKeyExists(key) {
-        return this.#data.every(dataObject => key in dataObject);
+        return this.#_data.every(dataObject => key in dataObject);
     }
 
     /**
@@ -262,13 +262,13 @@ module.exports = class DataTableSource {
     #render() {
 
         // Apply Pagination
-        const startIndex = (this.#currentPage - 1) * this.#pageSize;
-        let endIndex = startIndex + this.#pageSize;
+        const startIndex = (this.#_currentPage - 1) * this.#_pageSize;
+        let endIndex = startIndex + this.#_pageSize;
         if (endIndex <= 0) {
-            endIndex = this.#filteredData.length;
+            endIndex = this.#_filteredData.length;
         }
 
-        this.#renderedData = this.#filteredData.slice(startIndex, endIndex);
+        this.#_renderedData = this.#_filteredData.slice(startIndex, endIndex);
     }
 
     /**
@@ -279,8 +279,8 @@ module.exports = class DataTableSource {
     }
 
     resetSorting() {
-        this.#sortOrder = ''
-        this.#sortKey = 'asc'
-        this.#filterData(this.#filter)
+        this.#_sortOrder = ''
+        this.#_sortKey = 'asc'
+        this.#filterData(this.#_filter)
     }
 }

@@ -70,6 +70,12 @@ describe('DataTableSource constructor tests', function () {
         const dataTableSource = new DataTableSource(data)
         expect(dataTableSource.renderedData).eql(data)
     });
+
+    it('should overwrite data', function () {
+        const dataTableSource = new DataTableSource(data)
+        dataTableSource.data = [{singer: 'Merethe Soltvedt'}]
+        expect(dataTableSource.renderedData).eql([{singer: 'Merethe Soltvedt'}])
+    });
 })
 
 
