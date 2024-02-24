@@ -25,10 +25,10 @@ module.exports = class DataTableSource {
             throw new Error("Can not create DataTableSource. Input data needs to be an array of objects.")
         }
         if (data.length > 0) {
-            if (!this.#checkIfArrayConsistsOfObjects(data)) {
+            if (!this._checkIfArrayConsistsOfObjects(data)) {
                 throw new Error("Can not create DataTableSource. Input data needs to be an array of objects.")
             }
-            if (!this.#checkIfObjectsHaveSameKeys(data)) {
+            if (!this._checkIfObjectsHaveSameKeys(data)) {
                 throw new Error("Objects in data array do not have uniform keys")
             }
         }
@@ -44,7 +44,7 @@ module.exports = class DataTableSource {
     set data(value) {
         this._data = value
         this._filteredData = this._data
-        this.#render()
+        this._render()
     }
 
     /**
@@ -62,7 +62,7 @@ module.exports = class DataTableSource {
     set filter(value) {
         this._currentPage = 1
         this._filter = value
-        this.#filterData(this._filter)
+        this._filterData(this._filter)
         if (this._sortKey) {
             this.sortData(this._sortKey, this._sortOrder)
         }
@@ -84,7 +84,7 @@ module.exports = class DataTableSource {
     set pageSize(value) {
         if (typeof value === 'number' && value >= 0) {
             this._pageSize = value
-            this.#render()
+            this._render()
         } else {
             throw new Error('pageSize must be a number greater or equal 0')
         }
@@ -106,7 +106,7 @@ module.exports = class DataTableSource {
     set currentPage(value) {
         if (typeof value === 'number' && value > 0) {
             this._currentPage = value
-            this.#render()
+            this._render()
         } else {
             throw new Error('currentPage must be a positive number')
         }
@@ -168,7 +168,7 @@ module.exports = class DataTableSource {
      * @param {Array} data - The input data array.
      * @returns {boolean} - True if all elements in the array are objects; otherwise, false.
      */
-    #checkIfArrayConsistsOfObjects(data) {
+    _checkIfArrayConsistsOfObjects(data) {
         return !data.some((currentValue) => {
             return typeof currentValue !== 'object' || Array.isArray(currentValue) || !currentValue
         })
@@ -180,7 +180,7 @@ module.exports = class DataTableSource {
      * @param {Array} data - The input data array.
      * @returns {boolean} - True if all objects have the same keys; otherwise, false.
      */
-    #checkIfObjectsHaveSameKeys(data) {
+    _checkIfObjectsHaveSameKeys(data) {
         const firstObject = data[0]
         return data.every((currentValue) => {
             return JSON.stringify(Object.keys(firstObject).sort()) === JSON.stringify(Object.keys(currentValue).sort());
@@ -192,7 +192,7 @@ module.exports = class DataTableSource {
      * @private
      * @param {string} filter - The filter string.
      */
-    #filterData(filter) {
+    _filterData(filter) {
         if (typeof filter === 'number') {
             filter = filter.toString()
         }
@@ -205,7 +205,7 @@ module.exports = class DataTableSource {
             return dataStr.indexOf(filter.toLowerCase().trim()) !== -1
         })
 
-        this.#render()
+        this._render()
     }
 
     /**
@@ -220,7 +220,7 @@ module.exports = class DataTableSource {
             throw new Error('Invalid sorting order. Use "asc" for ascending or "desc" for descending.');
         }
 
-        if (!this.#checkIfKeyExists(key)) {
+        if (!this._checkIfKeyExists(key)) {
             throw new Error(`Key "${key}" does not exist in the data objects.`);
         }
 
@@ -242,7 +242,7 @@ module.exports = class DataTableSource {
         this._sortKey = key
         this._sortOrder = order
 
-        this.#render();
+        this._render();
     }
 
     /**
@@ -251,7 +251,7 @@ module.exports = class DataTableSource {
      * @param {string} key - The key to check for existence.
      * @returns {boolean} - True if the key exists in all data objects; otherwise, false.
      */
-    #checkIfKeyExists(key) {
+    _checkIfKeyExists(key) {
         return this._data.every(dataObject => key in dataObject);
     }
 
@@ -259,7 +259,7 @@ module.exports = class DataTableSource {
      * Renders the data based on filter, pageSize, and currentPage.
      * @private
      */
-    #render() {
+    _render() {
 
         // Apply Pagination
         const startIndex = (this._currentPage - 1) * this._pageSize;
@@ -281,6 +281,6 @@ module.exports = class DataTableSource {
     resetSorting() {
         this._sortOrder = ''
         this._sortKey = 'asc'
-        this.#filterData(this._filter)
+        this._filterData(this._filter)
     }
 }
